@@ -10,13 +10,14 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.regex.Pattern;
-
 @Service
 public class PdfMetadataService {
 
     private static final Pattern FOUR_CHAR_PATTERN = Pattern.compile(".{4}");
     private static final List<String> KNOWN_BANK_PRODUCERS = List.of(
             "iText 4.2.0 by 1T3XT",
+            "iText® 5.5.0 ©2000-2013 iText Group NV (AGPL-version)",
+            "Apache FOP Version 2.6",
             "^ﬂ2ã",
             "Ì\r™g",
             "r\bv»",
@@ -24,7 +25,9 @@ public class PdfMetadataService {
     );
     private static final Pattern BANK_PRODUCER_PATTERN = Pattern.compile(
             "iText\\s\\d+\\.\\d+\\.\\d+\\sby\\s1T3XT|" +
-                    "\\^ﬂ2ã|" +
+                    "iText® 5.5.0 ©2000-2013 iText Group NV (AGPL-version)"+
+                    "Apache FOP Version 2.6"+
+            "\\^ﬂ2ã|" +
                     "Ì\\r™g|" +
                     "r\\bv»|" +
                     "¬´E",
@@ -34,6 +37,7 @@ public class PdfMetadataService {
     public PdfMetadataDto extractPdfMetadata(MultipartFile file) throws IOException {
         File tempFile = File.createTempFile("uploaded", ".pdf");
         file.transferTo(tempFile);
+
         try (PDDocument document = PDDocument.load(tempFile)) {
             return extractMetadata(document);
         } finally {
